@@ -63,5 +63,6 @@ Use a .env file in the server folder to configure your MongoDB connection string
 
 ---
 
-Developed by Haim Galata
+Developed by **Haim Galata**
 as part of the Web Development Environments course in the Computer Science degree (Year 2).
+
