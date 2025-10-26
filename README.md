@@ -55,11 +55,13 @@ npm start
 
 The application will run locally on http://localhost:3000
 
-Developed by Haim Galata
-as part of the Web Development Environments course in the Computer Science degree (Year 2).
-
 🛠 Notes
 
 Make sure you have Node.js and MongoDB installed.
 
 Use a .env file in the server folder to configure your MongoDB connection string.#
+
+---
+
+Developed by Haim Galata
+as part of the Web Development Environments course in the Computer Science degree (Year 2).
