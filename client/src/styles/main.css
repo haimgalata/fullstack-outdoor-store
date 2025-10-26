@@ -1,0 +1,236 @@
+/* File: client/src/styles/main.css */
+
+/* ========================
+   General styles for the whole website
+======================== */
+body {
+  background-color: #f8f9fa;  /* Light gray background color */
+  font-family: Arial, sans-serif; /* Easy to read font */
+  margin: 0;                   /* Remove default margin */
+  padding: 0;                  /* Remove default padding */
+  color: #343a40;              /* Dark gray text color */
+  padding-top: 70px;           /* Leave space for fixed navbar at top */
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #343a40;              /* Dark text for all headings */
+  margin-bottom: 1rem;         /* Space below headings */
+}
+
+/* Utility classes to add margin and padding easily */
+.mb-3 { margin-bottom: 1rem !important; }
+.mt-3 { margin-top: 1rem !important; }
+.mt-4 { margin-top: 1.5rem !important; }
+.mt-5 { margin-top: 3rem !important; }
+.p-3  { padding: 1rem !important; }
+
+/* ========================
+   Navbar styles - the top bar on all pages
+======================== */
+.navbar {
+  position: fixed;             /* Navbar stays at the top even when scrolling */
+  top: 0;
+  left: 0;
+  width: 100%;                /* Navbar stretches full width */
+  z-index: 1000;              /* Make sure navbar stays on top */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Light shadow under navbar */
+  background: #fff;           /* White background */
+}
+
+.navbar-brand {
+  font-weight: bold;          /* Bold font for brand name */
+  font-size: 1.5rem;          /* Make brand name bigger */
+}
+
+.navbar-logo {
+  height: 40px;               /* Logo height */
+  width: 40px;                /* Logo width */
+  object-fit: cover;          /* Make logo image fit nicely */
+  border-radius: 50%;         /* Make logo round */
+  margin-right: 10px;         /* Space between logo and text */
+}
+
+/* ========================
+   Buttons styles - primary and danger
+======================== */
+.btn-primary {
+  background-color: #007bff;  /* Blue color for main buttons */
+  border-color: #007bff;
+  transition: background-color 0.3s ease; /* Smooth color change on hover */
+}
+
+.btn-primary:hover {
+  background-color: #0056b3;  /* Darker blue when mouse is over button */
+  border-color: #0056b3;
+}
+
+.btn-danger {
+  background-color: #dc3545;  /* Red color for dangerous actions (like delete) */
+  border-color: #dc3545;
+}
+
+.btn-danger:hover {
+  background-color: #a71d2a;  /* Darker red on hover */
+  border-color: #a71d2a;
+}
+
+.btn-outline-secondary {
+  color: #6c757d;             /* Gray text for outline buttons */
+  border-color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;  /* Gray background on hover */
+  color: white;               /* White text on hover */
+}
+
+/* ========================
+   Banner image - big image on homepage
+======================== */
+.banner-main-img {
+  width: 300%;                /* Make the banner image very wide */
+  max-height: 500px;          /* Limit the height */
+  object-fit: cover;          /* Crop image nicely to fill space */
+  border-radius: 8px;         /* Rounded corners */
+  display: block;             /* Display as block element */
+  margin: 0 auto;             /* Center the image horizontally */
+}
+
+/* ========================
+   Home page product grid styles - showing 9 products in 3 columns
+======================== */
+.products-grid {
+  display: grid;              /* Use grid layout */
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+  gap: 20px;                  /* Space between grid items */
+  padding: 20px 0;            /* Vertical padding above and below */
+}
+
+/* Responsive design: change columns on smaller screens */
+@media (max-width: 900px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
+  }
+}
+
+@media (max-width: 600px) {
+  .products-grid {
+    grid-template-columns: 1fr;             /* 1 column on phones */
+  }
+}
+
+.card {
+  border-radius: 8px;          /* Rounded corners */
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1); /* Light shadow */
+  transition: box-shadow 0.3s ease; /* Smooth shadow change when hovered */
+  display: flex;              /* Use flex layout to arrange content vertically */
+  flex-direction: column;
+}
+
+.card:hover {
+  box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Bigger shadow on hover */
+}
+
+.card-img-top {
+  border-radius: 8px 8px 0 0; /* Rounded top corners for image */
+  object-fit: cover;          /* Crop image nicely */
+}
+
+
+/* ========================
+   Cart styles - side panel for shopping cart
+======================== */
+.cart-container {
+  position: fixed;            /* Fixed to screen */
+  top: 0;
+  right: 0;
+  width: 320px;               /* Width of cart panel */
+  height: 100vh;              /* Full viewport height */
+  background-color: #f8f9fa;  /* Light gray background */
+  border: 1px solid #ddd;     /* Light border */
+  border-radius: 8px 0 0 8px; /* Rounded corners on left side */
+  padding: 1rem;              /* Padding inside */
+  overflow-y: auto;           /* Scroll if content is tall */
+  z-index: 1050;              /* On top of most elements */
+  box-shadow: 0 0 15px rgba(0,0,0,0.1); /* Soft shadow */
+}
+
+/* Cart product image size */
+.cart-product-img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+/* Responsive cart style for smaller screens */
+@media (max-width: 768px) {
+  .cart-container {
+    width: 100% !important;      /* Full width on small screens */
+    height: 50vh !important;     /* Half screen height */
+    top: auto !important;        /* Position at bottom */
+    bottom: 0 !important;
+    right: 0 !important;
+    border-radius: 12px 12px 0 0 !important; /* Rounded top corners */
+    box-shadow: 0 -2px 15px rgba(0,0,0,0.2); /* Shadow from bottom */
+  }
+}
+
+/* ========================
+   Checkout page styles - the order confirmation page
+======================== */
+.checkout-container {
+  max-width: 600px;           /* Limit width for readability */
+  margin: 3rem auto;          /* Center horizontally with margin top and bottom */
+}
+
+.checkout-product-img {
+  width: 60px;                /* Small product image */
+  height: 60px;
+  object-fit: cover;          /* Crop nicely */
+  border-radius: 6px;         /* Rounded corners */
+}
+
+/* ========================
+   Images styling - general for images that should scale well
+======================== */
+.img-fluid {
+  max-width: 100%;            /* Image won't exceed container width */
+  height: auto;               /* Keep image aspect ratio */
+  border-radius: 6px;         /* Slight rounding */
+}
+
+/* ========================
+   Forms styling - input fields and select boxes
+======================== */
+form label {
+  font-weight: 600;           /* Make labels bold */
+}
+
+form .form-control, form .form-select {
+  border-radius: 6px;         /* Rounded inputs */
+  border: 1px solid #ced4da;  /* Light gray border */
+  padding: 0.5rem 0.75rem;    /* Comfortable padding */
+  transition: border-color 0.3s ease; /* Smooth effect when focusing */
+}
+
+form .form-control:focus, form .form-select:focus {
+  border-color: #007bff;      /* Blue border on focus */
+  outline: none;              /* Remove default outline */
+  box-shadow: 0 0 5px rgba(0,123,255,.5); /* Blue glow effect */
+}
+
+/* ========================
+   Error messages styling - show error clearly
+======================== */
+.alert-danger {
+  color: #842029;             /* Dark red text */
+  background-color: #f8d7da; /* Light red background */
+  border-color: #f5c2c7;      /* Red border */
+  border-radius: 6px;         /* Rounded corners */
+  padding: 0.75rem 1rem;      /* Padding */
+  margin-bottom: 1rem;        /* Space below alert */
+  font-weight: 600;           /* Bold text */
+  text-align: center;         /* Centered text */
+}
+
