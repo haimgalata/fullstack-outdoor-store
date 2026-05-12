@@ -71,13 +71,13 @@ Built for clarity, deployable to **Railway** with a single service.
 
 ```mermaid
 flowchart TB
-  subgraph client [ReactClient]
+  subgraph reactApp [React client]
     UI[CRA app or static build]
   end
-  subgraph api [ExpressAPI]
+  subgraph expressApi [Express API]
     Routes["/api/products · /api/orders"]
   end
-  subgraph data [MongoDB]
+  subgraph mongoDb [MongoDB]
     DB[(Atlas or local cluster)]
   end
   UI -->|HTTPS same origin in prod| Routes
