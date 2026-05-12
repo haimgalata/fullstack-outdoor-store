@@ -29,7 +29,7 @@ Built for clarity, deployable to **Railway** with a single service.
 
 | *Add a homepage screenshot* | *Add cart / checkout screenshots* |
 |:---:|:---:|
-| `docs/preview-home.png` | `docs/preview-checkout.png` |
+|  ![](docs/preview-home.png) | ![](docs/preview-checkout.png)  |
 
 </div>
 
