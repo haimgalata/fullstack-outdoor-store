@@ -151,6 +151,7 @@ Open **http://localhost:5000**. Express serves **`client/build`** and the same *
 | **CORS errors** (rare with this repo) | Usually only if you host the **static build** on a **different origin** than the API without a proxy. Prefer the **single Railway service** in the README, or configure CORS and a **`REACT_APP_*`** API base URL for split hosting. |
 | **Broken product images** | Add image files under **`client/public/`** matching names in the seed (e.g. `HikingBackpack.jpg`) or change **`imageUrl`** values in [`server/server.js`](server/server.js). |
 | **`EADDRINUSE`** on port 5000 | Another app uses the port — change **`PORT`** in `server/.env` and set the CRA **`proxy`** in [`client/package.json`](client/package.json) to the same host/port. |
+| **`npm audit` shows many issues in `client/`** | The Create React App toolchain (`react-scripts`) depends on webpack, Jest, SVGO, and other packages; some advisories cannot be fixed without upgrading or replacing CRA. Run **`npm audit fix`** (without **`--force`**) in `client/` and `server/` after installs. **Never run `npm audit fix --force`** in `client/` — npm may try to replace `react-scripts` with an invalid version and break the build. Fully clearing client advisories typically means migrating to a modern bundler (for example Vite). The **`server/`** tree is small; `npm audit fix` there should report **zero** vulnerabilities. |
 
 ---
 
