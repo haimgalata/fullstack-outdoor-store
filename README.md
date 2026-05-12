@@ -1,184 +1,252 @@
+<div align="center">
+
 # Outdoor Adventure Shop
 
-[![Node.js](https://img.shields.io/badge/node-%3E%3D18-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+**Full-stack storefront** — React UI, Express REST API, MongoDB persistence.  
+Built for clarity, deployable to **Railway** with a single service.
 
-Full-stack demo store for outdoor equipment: a **React** storefront talks to a **Node.js + Express** REST API backed by **MongoDB**. Suitable for local development, **MongoDB Atlas**, and **Railway** (single-service deploy).
+<br />
+
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Express](https://img.shields.io/badge/Express-4-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/atlas)
+[![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+<br />
+
+[**Repository**](https://github.com/haimgalata/fullstack-outdoor-store) · **Live demo** — *add your deployed URL after Railway / hosting setup*
+
+</div>
+
+<br />
+
+---
+
+## Preview
+
+<div align="center">
+
+| *Add a homepage screenshot* | *Add cart / checkout screenshots* |
+|:---:|:---:|
+| `docs/preview-home.png` | `docs/preview-checkout.png` |
+
+</div>
+
+> **Assets:** Product seed data references images such as `/HikingBackpack.jpg`. Place matching files in [`client/public/`](client/public/) or update paths in [`server/server.js`](server/server.js).
+
+<br />
 
 ---
 
 ## Features
 
-- Product catalog loaded from the database (`GET /api/products`)
-- Client-side search (name and description)
-- Shopping cart with quantities, persisted in **localStorage**
-- Checkout form (customer details, shipping method, totals) and order submission (`POST /api/orders`)
-- Automatic **seed catalog** when the products collection is empty (first connection)
+| | |
+|:---|:---|
+| **Catalog** | Products loaded from MongoDB via `GET /api/products` |
+| **Search** | Client-side filter by product name and description |
+| **Cart** | Quantities, totals, persistence in `localStorage` |
+| **Checkout** | Guest order form; submits to `POST /api/orders` |
+| **Seed data** | Default catalog inserted once when the products collection is empty |
+
+<br />
 
 ---
 
 ## Tech stack
 
-| Area | Stack |
-|------|--------|
+| Layer | Technology |
+|:------|:-----------|
 | **Frontend** | React 18, Create React App, React Router 6, Bootstrap 5 |
 | **Backend** | Node.js, Express, Mongoose |
-| **Database** | MongoDB (local or **MongoDB Atlas**) |
-| **Authentication** | None — guest checkout only; cart lives in the browser |
-| **Deployment** | **Railway** (see below): root `build` + `start`, Express serves API and production static build |
+| **Database** | MongoDB (Atlas or self-hosted) |
+| **Auth** | *None* — guest checkout; cart only in the browser |
+| **Hosting** | Railway-ready: root `npm run build` → Express serves API + `client/build` |
+
+<br />
 
 ---
 
 ## Architecture
 
-```text
-client/                 # React app (CRA)
-  src/
-    App.jsx             # Products fetch, cart state, routes
-    pages/              # Home, Checkout
-    components/         # Navbar, Banner, Cart
-  public/               # Static assets (add product images here — see note below)
-
-server/                 # Express API
-  server.js             # App entry: MongoDB connect, seed, routes, optional SPA static
-  routes/               # products.js, orders.js
-  models/               # Product, Order (Mongoose)
+```mermaid
+flowchart TB
+  subgraph client [ReactClient]
+    UI[CRA app or static build]
+  end
+  subgraph api [ExpressAPI]
+    Routes["/api/products · /api/orders"]
+  end
+  subgraph data [MongoDB]
+    DB[(Atlas or local cluster)]
+  end
+  UI -->|HTTPS same origin in prod| Routes
+  Routes --> DB
 ```
 
-**Flow:** The browser calls **`/api/products`** and **`/api/orders`** (same origin in production; in local dev the CRA dev server **proxies** `/api` to port 5000). Orders and catalog are stored in MongoDB. There is no separate auth service.
+In **development**, the React dev server proxies `/api/*` to the API on port **5000**. In **production**, one Express process serves the API and the built SPA from the same host.
+
+<br />
 
 ---
 
-## Screenshots / preview
+## Project structure
 
-Screenshots are not included in the repository. After you run the app locally or on Railway, capture:
+```text
+fullstack-outdoor-store/
+├── client/                    # React (CRA)
+│   ├── public/              # Static assets & product images (add files to match seed)
+│   └── src/
+│       ├── App.jsx          # Products, cart state, routing
+│       ├── components/      # Navbar, Banner, Cart
+│       └── pages/           # Home, Checkout
+├── server/
+│   ├── .env.example         # Copy → .env (see Environment)
+│   ├── server.js            # Express entry, MongoDB, seed, static SPA
+│   ├── models/              # Product.js, Order.js
+│   └── routes/              # products.js, orders.js
+├── package.json             # Root: Railway build + start
+├── LICENSE
+└── README.md
+```
 
-- Home page with the product grid  
-- Cart drawer  
-- Checkout page and success state  
-
-Place images in a `docs/` folder or your wiki and link them here if you like.
-
-**Product images:** Seed data references files such as `/HikingBackpack.jpg` under the React **`public/`** folder. Add matching image files to [`client/public/`](client/public/) (or change URLs in the seed data in [`server/server.js`](server/server.js)) so images load correctly.
+<br />
 
 ---
 
-## Installation
+## Environment variables
 
-### Clone repository
+Create **`server/.env`** from [`server/.env.example`](server/.env.example). On Railway, set the same keys in the service **Variables** UI (never commit secrets).
+
+| Variable | Required | Description |
+|:---------|:---------|:------------|
+| `MONGO_URI` | Yes* | MongoDB connection string (`mongodb+srv://…` for Atlas). |
+| `MONGODB_URI` | No | Alias: used only if `MONGO_URI` is unset. |
+| `PORT` | No | API port (default **5000** locally). Set automatically on Railway. |
+
+\*One of `MONGO_URI` or `MONGODB_URI` must be present.
+
+No JWT or third-party API keys are required for this codebase.
+
+<br />
+
+---
+
+## MongoDB Atlas
+
+1. Create a **cluster** in [MongoDB Atlas](https://www.mongodb.com/atlas) (free tier is fine).
+2. **Database Access** → add a user (save username and password).
+3. **Network Access** → allow your IP for local work, or **`0.0.0.0/0`** for cloud deploys (tighten for production when you can).
+4. **Connect** → **Drivers** → copy the SRV string; replace `<password>` and set a database name in the path, e.g. `…/outdoor_shop?retryWrites=true&w=majority`.
+5. Paste into **`MONGO_URI`** in `server/.env` (or Railway variables).
+
+<br />
+
+---
+
+## Local development
+
+**Prerequisites:** Node.js **≥ 18**, npm, and a reachable MongoDB URI.
 
 ```bash
 git clone https://github.com/haimgalata/fullstack-outdoor-store.git
 cd fullstack-outdoor-store
 ```
 
-### Install dependencies
-
 ```bash
-cd client && npm install
-cd ../server && npm install
+cd client && npm install && cd ../server && npm install
 ```
 
-### Configure environment variables
-
-1. Copy the example env file:
-
-   ```bash
-   cp server/.env.example server/.env
-   ```
-
-2. Edit **`server/.env`** and set at least **`MONGO_URI`** (see table below).
-
-> **Railway:** Add the same variables in the service **Variables** tab (no need to commit `.env`).
-
-### MongoDB Atlas setup
-
-1. In [Atlas](https://www.mongodb.com/atlas), create a **cluster** (free tier is fine).
-2. **Database Access:** create a database user (username + password).  
-3. **Network Access:** add your IP for local development, or **`0.0.0.0/0`** for cloud hosts (e.g. Railway). Restrict IPs in production when possible.
-4. **Connect** your app: choose **Drivers**, copy the **connection string**, insert the user password and a database name in the path (e.g. `...mongodb.net/outdoor_shop?...`).
-5. Paste the string into **`MONGO_URI`** in `server/.env`.
-
-### Run locally (recommended: two terminals)
-
-**Terminal 1 — API (from repo root)**
-
 ```bash
-cd server
-npm start
+# Windows PowerShell
+Copy-Item server\.env.example server\.env
+# macOS / Linux
+# cp server/.env.example server/.env
 ```
 
-Runs on **http://localhost:5000** by default.
+Then edit **`server/.env`** with your **`MONGO_URI`**.
 
-**Terminal 2 — React dev server**
+| Terminal | Command | URL |
+|:---------|:--------|:----|
+| **API** | `cd server` → `npm start` | [http://localhost:5000](http://localhost:5000) |
+| **UI** | `cd client` → `npm start` | [http://localhost:3000](http://localhost:3000) |
 
-```bash
-cd client
-npm start
-```
+The client **`proxy`** forwards `/api/*` to port **5000** — no hardcoded API host in the app.
 
-Opens **http://localhost:3000**; API requests to **`/api/*`** are proxied to port **5000** ([`client/package.json`](client/package.json) `proxy`).
+**First run:** If the `products` collection is empty, the server seeds the default catalog once ([`server/server.js`](server/server.js)).
 
-**Optional — single port (production-style locally)**
+<br />
 
-From the repository root, after configuring `server/.env`:
+---
+
+## Production build
+
+From the **repository root** (after `server/.env` is configured):
 
 ```bash
 npm run build
 npm start
 ```
 
-Then open **http://localhost:5000** (Express serves the built UI and the API).
+Open **http://localhost:5000** — Express serves **`client/build`** and **`/api/*`** on one port (same pattern as Railway).
 
----
+| Scope | Command |
+|:------|:--------|
+| Client only | `npm run build --prefix client` → output `client/build/` |
+| Full pipeline (Railway) | `npm run build` at repo root |
 
-## Environment variables
-
-| Variable | Required | Description |
-|----------|----------|-------------|
-| **`MONGO_URI`** | Yes (unless `MONGODB_URI` is set) | MongoDB connection string (e.g. Atlas `mongodb+srv://...`). |
-| **`MONGODB_URI`** | No | Alternative name for the same string; used if `MONGO_URI` is unset. |
-| **`PORT`** | No | HTTP port for Express (default **5000** locally). **Railway** sets this automatically. |
-
-No JWT secrets or third-party API keys are used by this codebase.
+<br />
 
 ---
 
 ## Railway deployment
 
-Deploy as **one** Railway service from the **repository root** (where [`package.json`](package.json) lives).
+| Step | Action |
+|:----:|:-------|
+| 1 | New Railway project → deploy from GitHub; **root directory** = repo root. |
+| 2 | **Build command:** `npm run build` |
+| 3 | **Start command:** `npm start` |
+| 4 | **Variables:** `MONGO_URI` = your Atlas SRV string (`PORT` is injected by Railway). |
 
-1. **New project** → **Deploy from GitHub** (or CLI) and select this repo.
-2. **Build command:** `npm run build`  
-   - Installs client + server dependencies, runs `react-scripts build`, produces `client/build`.
-3. **Start command:** `npm start`  
-   - Runs `npm start --prefix server` → `node server.js` with `cwd` **server/** so **`server/.env`** is picked up by dotenv if you upload vars to the filesystem (on Railway, prefer **Variables** instead of committing `.env`).
-4. **Variables:** set **`MONGO_URI`** to your Atlas SRV string (same as local). Do not commit secrets.
-5. **Generate domain** (or attach a custom domain) and open the URL — UI and **`/api/*`** share the same origin.
+The UI and API share one origin, so relative `/api` calls work without extra CORS configuration.
 
-If the build fails, check Railway logs: Node **≥ 18** and a valid **`MONGO_URI`** are required.
+<br />
+
+---
+
+## Troubleshooting
+
+| Issue | Check |
+|:------|:------|
+| Server exits with missing MongoDB URI | `server/.env` contains `MONGO_URI` or `MONGODB_URI`. |
+| Connection timeout / refused | Atlas network allowlist; correct password (URL-encoded if needed); cluster up. |
+| Empty UI / failed fetches in dev | API running on **5000**; browser Network tab for `/api/products`. |
+| Broken images | Files in `client/public/` match seed `imageUrl` names, or update seed in `server/server.js`. |
+| Port 5000 in use | Set `PORT` in `.env` and align `proxy` in [`client/package.json`](client/package.json). |
+| Split hosting CORS | Prefer single-service Railway; otherwise configure CORS + a build-time API base URL. |
+| Many `npm audit` issues in `client/` | Run `npm audit fix` **without** `--force`. Residual findings are common with `react-scripts`; clearing them usually means migrating off CRA (e.g. Vite). **`server/`** should report **zero** after `npm audit fix`. |
+
+<br />
 
 ---
 
 ## Future improvements
 
-- User accounts and authentication  
-- Server-side cart or session  
-- Payment integration (e.g. Stripe)  
-- Order confirmation email  
-- Automated tests and CI  
-- Rate limiting and input hardening on public APIs  
-- CDN or object storage for product images  
+- Accounts, sessions, and role-based access  
+- Payments (e.g. Stripe) and transactional email  
+- Tests, CI, and API rate limiting  
+- CDN / object storage for media  
+
+<br />
 
 ---
 
-## License
+<div align="center">
 
-This project is licensed under the **MIT License** — see [LICENSE](LICENSE).
+### License
 
----
+Released under the [MIT License](LICENSE).
 
-## Author
+**Haim Galata**
 
-**Haim Galata** — originally developed for a Web Development Environments course; repository maintained for learning and deployment demos.
+</div>
