@@ -1,7 +1,9 @@
 // File: Server/server.js
 
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); // Load environment variables from .env file (cwd: server/)
 
+const path = require('path');
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -66,18 +68,20 @@ const seedProducts = [
 const productsRoutes = require('./routes/products');
 const ordersRoutes = require('./routes/orders');
 
-const app = express();
+const mongoUri = process.env.MONGO_URI || process.env.MONGODB_URI;
+if (!mongoUri) {
+  console.error(
+    'Missing MongoDB URI. Set MONGO_URI (or MONGODB_URI) in server/.env — see server/.env.example'
+  );
+  process.exit(1);
+}
 
-app.use(cors());            // Enable Cross-Origin Resource Sharing (allow client requests)
-app.use(express.json());    // Parse incoming JSON requests
-
-// Connect to MongoDB using URI from .env file
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ MongoDB connected'))
-.catch((err) => console.error('❌ MongoDB connection error:', err));
+mongoose
+  .connect(mongoUri, {
+    serverSelectionTimeoutMS: 15000,
+  })
+  .then(() => console.log('MongoDB connected'))
+  .catch((err) => console.error('MongoDB connection error:', err));
 
 // Seed products if DB is empty
 mongoose.connection.once('open', async () => {
@@ -85,24 +89,40 @@ mongoose.connection.once('open', async () => {
     const count = await Product.countDocuments();
     if (count === 0) {
       await Product.insertMany(seedProducts);
-      console.log('✅ Seed products loaded');
+      console.log('Seed products loaded');
     }
   } catch (err) {
-    console.error('❌ Error seeding products:', err);
+    console.error('Error seeding products:', err);
   }
 });
 
-// Setup routes for products and orders API endpoints
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
 app.use('/api/products', productsRoutes);
 app.use('/api/orders', ordersRoutes);
 
-// Basic route to check server status
-app.get('/', (req, res) => {
-  res.send('🌲 Outdoor Adventure Shop API is running');
-});
+const clientBuildPath = path.join(__dirname, '../client/build');
+const indexHtmlPath = path.join(clientBuildPath, 'index.html');
+const hasClientBuild = fs.existsSync(indexHtmlPath);
 
-// Start the server on specified port (default 5000)
+if (hasClientBuild) {
+  app.use(express.static(clientBuildPath));
+  app.get('*', (req, res) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ message: 'Not found' });
+    }
+    res.sendFile(indexHtmlPath);
+  });
+} else {
+  app.get('/', (req, res) => {
+    res.send('Outdoor Adventure Shop API is running. Build the client (npm run build in client/) to serve the web UI from this server.');
+  });
+}
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

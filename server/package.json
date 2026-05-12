@@ -2,9 +2,11 @@
   "name": "outdoor-adventure-shop-server",
   "version": "1.0.0",
   "main": "server.js",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
-    "start": "node server.js",
-    "seed": "node seed.js"
+    "start": "node server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
